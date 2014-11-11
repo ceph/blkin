@@ -33,28 +33,15 @@ MINOR=1
 LIBS= -ldl -llttng-ust
 DLIB=libzipkin-c
 DLIBPP=libzipkin-cpp
-DLIBFRONT=libblkin-front
 
 LIB_DIR=$(shell pwd)
 prefix= /usr/local
 libdir= $(prefix)/lib
 incdir= $(prefix)/include
 
-H_FILES= zipkin_c.h zipkin_trace.h ztracer.hpp blkin-front.h
+H_FILES= zipkin_c.h zipkin_trace.h ztracer.hpp
 
-default: $(DLIB).so $(DLIBPP).so $(DLIBFRONT).so test testpp testppp
-
-$(DLIBFRONT).so: $(DLIBFRONT).$(MAJOR).so
-	ln -sf $< $@
-
-$(DLIBFRONT).$(MAJOR).so: $(DLIBFRONT).$(MAJOR).$(MINOR).so
-	ln -sf $< $@
-
-$(DLIBFRONT).$(MAJOR).$(MINOR).so: blkin-front.o
-	gcc -shared -g -o $@ $< -ldl
-
-blkin-front.o: blkin-front.c
-	gcc -I. -g -Wall -fpic -c -o $@ $<
+default: $(DLIB).so $(DLIBPP).so test testpp testppp
 
 $(DLIBPP).so: $(DLIBPP).$(MAJOR).so
 	ln -sf $< $@
@@ -62,8 +49,8 @@ $(DLIBPP).so: $(DLIBPP).$(MAJOR).so
 $(DLIBPP).$(MAJOR).so: $(DLIBPP).$(MAJOR).$(MINOR).so
 	ln -sf $< $@
 
-$(DLIBPP).$(MAJOR).$(MINOR).so: ztracer.o $(DLIBFRONT).so
-	gcc -shared -g -o $@ $< -L. -lblkin-front
+$(DLIBPP).$(MAJOR).$(MINOR).so: ztracer.o
+	gcc -shared -g -o $@ $< -L. -lzipkin-c
 
 ztracer.o: ztracer.cc ztracer.hpp
 	gcc -I. -Wall -fpic -g -c -o $@ $<
@@ -83,8 +70,8 @@ zipkin_c.o: zipkin_c.c zipkin_c.h zipkin_trace.h
 tp.o: tp.c zipkin_trace.h
 	gcc -I. -fpic -g -c -o $@ $<
 
-test: test.c $(DLIBFRONT).so
-	gcc test.c -o test -g -I. -L. -lblkin-front
+test: test.c $(DLIB).so
+	gcc test.c -o test -g -I. -L. -lzipkin-c
 
 testpp: test.cc $(DLIBPP).so
 	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I. -L. -lboost_thread -lboost_system -lzipkin-cpp
@@ -110,9 +97,6 @@ install:
 	install -m 644  $(DLIB).$(MAJOR).$(MINOR).so $(DESTDIR)/$(libdir)
 	cp -P $(DLIB).$(MAJOR).so $(DESTDIR)/$(libdir)
 	cp -P $(DLIB).so $(DESTDIR)/$(libdir)
-	install -m 644 $(DLIBFRONT).$(MAJOR).$(MINOR).so $(DESTDIR)/$(libdir)
-	cp -P $(DLIBFRONT).$(MAJOR).so $(DESTDIR)/$(libdir)
-	cp -P $(DLIBFRONT).so $(DESTDIR)/$(libdir)
 	install -m 644 $(H_FILES) $(DESTDIR)/$(incdir)
 
 clean:

@@ -28,7 +28,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "zipkin_c.h"
+#include <pthread.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #define TRACEPOINT_DEFINE
 #include <zipkin_trace.h>
@@ -36,7 +39,7 @@
 const char *default_ip = "NaN";
 const char *default_name = "NoName";
 
-int64_t random_big()
+static int64_t random_big()
 {
     int64_t a;
     a = rand();
@@ -46,9 +49,31 @@ int64_t random_big()
     if (a<0)
         a = !a;
     return a;
-};
+}
 
-int _blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
+int blkin_init()
+{
+	static pthread_mutex_t blkin_init_mutex = PTHREAD_MUTEX_INITIALIZER;
+	static int initialized = 0;
+
+	/*
+	 * Initialize srand with sth appropriete
+	 * time is not good for archipelago: several deamons -> same timstamp
+	 */
+	pthread_mutex_lock(&blkin_init_mutex);
+	if (!initialized) {
+		int inf, seed;
+		inf = open("/dev/urandom", O_RDONLY); //file descriptor 1
+		read(inf, &seed, sizeof(int));
+		close(inf);
+		srand(seed);
+		initialized = 1;
+	}
+	pthread_mutex_unlock(&blkin_init_mutex);
+	return 0;
+}
+
+int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
         struct blkin_endpoint *endpoint)
 {
     int res;
@@ -67,7 +92,7 @@ OUT:
     return res;
 }
 
-int _blkin_init_child_info(struct blkin_trace *child,
+int blkin_init_child_info(struct blkin_trace *child,
         struct blkin_trace_info *parent_info, struct blkin_endpoint *endpoint,
 	const char *child_name)
 {
@@ -87,7 +112,7 @@ OUT:
     return res;
 }
 
-int _blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
+int blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
 		struct blkin_endpoint *endpoint, const char *child_name)
 {
     int res;
@@ -97,7 +122,7 @@ int _blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
     }
     if (!endpoint)
         endpoint = parent->trace_endpoint;
-    if (_blkin_init_child_info(child, &parent->info, endpoint, child_name) != 0){
+    if (blkin_init_child_info(child, &parent->info, endpoint, child_name) != 0){
         res = -EINVAL;
         goto OUT;
     }
@@ -107,7 +132,7 @@ OUT:
     return res;
 }
 
-int _blkin_init_endpoint(struct blkin_endpoint *endp, const char *ip, int port,
+int blkin_init_endpoint(struct blkin_endpoint *endp, const char *ip, int port,
         const char *name)
 {
     int res;
@@ -127,7 +152,7 @@ OUT:
     return res;
 }
 
-int _blkin_init_string_annotation(struct blkin_annotation *annotation, const char *key,
+int blkin_init_string_annotation(struct blkin_annotation *annotation, const char *key,
         const char *val, struct blkin_endpoint *endpoint)
 {
     int res;
@@ -145,7 +170,7 @@ OUT:
     return res;
 }
 
-int _blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
+int blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
         const char *event, struct blkin_endpoint *endpoint)
 {
     int res;
@@ -162,7 +187,7 @@ OUT:
     return res;
 }
 
-int _blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
+int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
 {
     int res;
     if ((!annotation) || (!trace)){
@@ -209,7 +234,7 @@ OUT:
     return res;
 }
 
-int _blkin_get_trace_info(struct blkin_trace *trace,
+int blkin_get_trace_info(struct blkin_trace *trace,
         struct blkin_trace_info *info)
 {
     int res;
@@ -223,7 +248,7 @@ OUT:
     return res;
 }
 
-int _blkin_set_trace_info(struct blkin_trace *trace,
+int blkin_set_trace_info(struct blkin_trace *trace,
         struct blkin_trace_info *info)
 {
     int res;
@@ -238,7 +263,7 @@ OUT:
     return res;
 }
 
-int _blkin_pack_trace_info(struct blkin_trace_info *info,
+int blkin_pack_trace_info(struct blkin_trace_info *info,
 				struct blkin_trace_info_packed *pinfo)
 {
 	if (!info || !pinfo) {
@@ -252,7 +277,7 @@ int _blkin_pack_trace_info(struct blkin_trace_info *info,
 	return 1;
 }
 
-int _blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
+int blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
 				struct blkin_trace_info *info)
 {
 	if (!info || !pinfo) {
