@@ -39,7 +39,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <blkin-front.h>
+#include <zipkin_c.h>
 
 #define SOCK_PATH "/tmp/socket"
 

@@ -35,7 +35,7 @@
 #include <boost/smart_ptr.hpp>
 
 extern "C" {
-#include <blkin-front.h>
+#include <zipkin_c.h>
 }
 
 namespace ZTracer {

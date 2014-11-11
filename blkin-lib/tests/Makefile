@@ -31,10 +31,9 @@
 LIB_DIR=$(shell pwd)/..
 DLIB=$(LIB_DIR)/libzipkin-c
 DLIBPP=$(LIB_DIR)/libzipkin-cpp
-DLIBFRONT=$(LIB_DIR)/libblkin-front
 
-test: test.c $(DLIBFRONT).so
-	gcc test.c -o test -g -I$(LIB_DIR) -L$(LIB_DIR) -lblkin-front
+test: test.c $(DLIB).so
+	gcc test.c -o test -g -I$(LIB_DIR) -L$(LIB_DIR) -lzipkin-c
 
 testpp: test.cc $(DLIBPP).so
 	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lzipkin-cpp
