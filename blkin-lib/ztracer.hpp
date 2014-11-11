@@ -70,6 +70,8 @@ namespace ZTracer {
 			{
 				//cout << "Endpoint destroyed" << std::endl;
 			}
+			static ZTraceEndpointRef create(const string &ip,
+					int port, const string &name);
 	};
 
 	class ZTrace {
@@ -125,13 +127,13 @@ namespace ZTracer {
 			int keyval(const char *key, const char *val, ZTraceEndpointRef ep);
 			int event(const char *event);
 			int event(const char *event, ZTraceEndpointRef ep);
-	};
 
-	ZTraceEndpointRef create_ZTraceEndpoint(const string &ip, int port, const string &name);
-	ZTraceRef create_ZTrace(const string &name, ZTraceEndpointRef ep);
-	ZTraceRef create_ZTrace(const string &name, ZTraceRef t);
-	ZTraceRef create_ZTrace(const string &name, ZTraceRef t, ZTraceEndpointRef ep);
-	ZTraceRef create_ZTrace(const string &name, ZTraceEndpointRef ep, struct blkin_trace_info *info, bool child=false);
+			static ZTraceRef create(const string &name, ZTraceEndpointRef ep);
+			static ZTraceRef create(const string &name, ZTraceRef t);
+			static ZTraceRef create(const string &name, ZTraceRef t, ZTraceEndpointRef ep);
+			static ZTraceRef create(const string &name, ZTraceEndpointRef ep,
+					struct blkin_trace_info *info, bool child=false);
+	};
 
 }
 #endif /* end of include guard: ZTRACER_H */

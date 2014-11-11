@@ -52,7 +52,7 @@ class Parent {
 	public:
 		Parent()
 		{
-			e = ZTracer::create_ZTraceEndpoint("0.0.0.0", 1, "parent");
+			e = ZTracer::ZTraceEndpoint::create("0.0.0.0", 1, "parent");
 			connect();
 		}
 		void operator()() 
@@ -84,7 +84,7 @@ class Parent {
 		{
 			struct message msg(rand());
 			/*Init trace*/
-			tr = ZTracer::create_ZTrace("parent process", e);
+			tr = ZTracer::ZTrace::create("parent process", e);
 			/*Annotate*/
 			tr->event("parent start");
 			/*Set trace info to the message*/
@@ -138,7 +138,7 @@ class Child {
 	public:
 		Child()
 		{
-			e = ZTracer::create_ZTraceEndpoint("0.0.0.1", 2, "child");
+			e = ZTracer::ZTraceEndpoint::create("0.0.0.1", 2, "child");
 		}
 		void operator()() 
 		{
@@ -154,7 +154,7 @@ class Child {
 			struct message msg;
 			recv(s, &msg, sizeof(struct message), 0);
 			
-			tr = ZTracer::create_ZTrace("Child process", e, &msg.trace_info, true);
+			tr = ZTracer::ZTrace::create("Child process", e, &msg.trace_info, true);
 			tr->event("child start");
 			
 			usleep(10);
