@@ -63,32 +63,28 @@ namespace ZTracer {
 
 	ZTraceEndpointRef ZTraceEndpoint::create(const string &ip, int port, const string &name)
 	{
-		boost::shared_ptr<ZTraceEndpoint> ret(new ZTraceEndpoint(ip, port, name));
-		return ret;
+		return shared_ptr<ZTraceEndpoint>(
+				new ZTraceEndpoint(ip, port, name));
 	}
 
 	ZTraceRef ZTrace::create(const string &name, ZTraceEndpointRef ep)
 	{
-		boost::shared_ptr<ZTrace> ret(new ZTrace(name, ep));
-		return ret;
+		return shared_ptr<ZTrace>(new ZTrace(name, ep));
 	}
 
 	ZTraceRef ZTrace::create(const string &name, ZTraceRef t)
 	{
-		boost::shared_ptr<ZTrace> ret(new ZTrace(name, t));
-		return ret;
+		return shared_ptr<ZTrace>(new ZTrace(name, t));
 	}
 
 	ZTraceRef ZTrace::create(const string &name, ZTraceRef t, ZTraceEndpointRef ep)
 	{
-		boost::shared_ptr<ZTrace> ret(new ZTrace(name, t, ep));
-		return ret;
+		return shared_ptr<ZTrace>(new ZTrace(name, t, ep));
 	}
 
 	ZTraceRef ZTrace::create(const string &name, ZTraceEndpointRef ep, struct blkin_trace_info *info, bool child)
 	{
-		boost::shared_ptr<ZTrace> ret(new ZTrace(name, ep, info, child));
-		return ret;
+		return shared_ptr<ZTrace>(new ZTrace(name, ep, info, child));
 	}
 	int ZTrace::get_trace_info(struct blkin_trace_info *info)
 	{
