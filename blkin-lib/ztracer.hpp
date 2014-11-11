@@ -31,7 +31,7 @@
 
 #define ZTRACER_H
 
-#include <sstream>
+#include <string>
 #include <boost/smart_ptr.hpp>
 
 extern "C" {
@@ -40,14 +40,15 @@ extern "C" {
 
 namespace ZTracer {
 	using std::string;
+	using boost::shared_ptr;
 
 	int ztrace_init(void);
 
 	class ZTraceEndpoint;
 	class ZTrace;
 
-	typedef boost::shared_ptr<ZTraceEndpoint> ZTraceEndpointRef;
-	typedef boost::shared_ptr<ZTrace> ZTraceRef;
+	typedef shared_ptr<ZTraceEndpoint> ZTraceEndpointRef;
+	typedef shared_ptr<ZTrace> ZTraceRef;
 
 	class ZTraceEndpoint {
 		private:
