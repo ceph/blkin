@@ -152,8 +152,8 @@ OUT:
     return res;
 }
 
-int blkin_init_string_annotation(struct blkin_annotation *annotation, const char *key,
-        const char *val, struct blkin_endpoint *endpoint)
+int blkin_init_string_annotation(struct blkin_annotation *annotation,
+	const char *key, const char *val, struct blkin_endpoint *endpoint)
 {
     int res;
     if ((!annotation) || (!key) || (!val)){
