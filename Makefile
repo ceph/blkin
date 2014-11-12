@@ -31,8 +31,7 @@
 MAJOR=0
 MINOR=1
 LIBS= -ldl -llttng-ust
-DLIB=libzipkin-c
-DLIBPP=libzipkin-cpp
+DLIB=libblkin
 
 LIB_DIR=$(shell pwd)
 prefix= /usr/local
@@ -41,19 +40,10 @@ incdir= $(prefix)/include
 
 H_FILES= zipkin_c.h zipkin_trace.h ztracer.hpp
 
-default: $(DLIB).so $(DLIBPP).so test testpp testppp
-
-$(DLIBPP).so: $(DLIBPP).$(MAJOR).so
-	ln -sf $< $@
-
-$(DLIBPP).$(MAJOR).so: $(DLIBPP).$(MAJOR).$(MINOR).so
-	ln -sf $< $@
-
-$(DLIBPP).$(MAJOR).$(MINOR).so: ztracer.o
-	gcc -shared -g -o $@ $< -L. -lzipkin-c
+default: $(DLIB).so test testpp testppp
 
 ztracer.o: ztracer.cc ztracer.hpp
-	gcc -I. -Wall -fpic -g -c -o $@ $<
+	g++ -I. -Wall -fpic -g -c -o $@ $<
 
 $(DLIB).so: $(DLIB).$(MAJOR).so
 	ln -sf $< $@
@@ -61,8 +51,8 @@ $(DLIB).so: $(DLIB).$(MAJOR).so
 $(DLIB).$(MAJOR).so: $(DLIB).$(MAJOR).$(MINOR).so
 	ln -sf $< $@
 
-$(DLIB).$(MAJOR).$(MINOR).so: zipkin_c.o tp.o
-	gcc -shared -o $@ $^ $(LIBS)
+$(DLIB).$(MAJOR).$(MINOR).so: zipkin_c.o ztracer.o tp.o
+	g++ -shared -o $@ $^ $(LIBS)
 
 zipkin_c.o: zipkin_c.c zipkin_c.h zipkin_trace.h
 	gcc -I. -Wall -fpic -g -c -o $@ $<
@@ -71,29 +61,26 @@ tp.o: tp.c zipkin_trace.h
 	gcc -I. -fpic -g -c -o $@ $<
 
 test: test.c $(DLIB).so
-	gcc test.c -o test -g -I. -L. -lzipkin-c
+	gcc test.c -o test -g -I. -L. -lblkin
 
-testpp: test.cc $(DLIBPP).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I. -L. -lboost_thread -lboost_system -lzipkin-cpp
+testpp: test.cc $(DLIB).so
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I. -L. -lboost_thread -lboost_system -lblkin
 
-testppp: test_p.cc $(DLIBPP).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I. -L. -lboost_thread -lboost_system -lzipkin-cpp
+testppp: test_p.cc $(DLIB).so
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I. -L. -lboost_thread -lboost_system -lblkin
 
-run_c:
+run_c: test
 	LD_LIBRARY_PATH=$(LIB_DIR) ./test
 
-run_pp:
+run_pp: testpp
 	LD_LIBRARY_PATH=$(LIB_DIR) ./testpp
 
-run_ppp:
+run_ppp: testppp
 	LD_LIBRARY_PATH=$(LIB_DIR) ./testppp
 
 run: run_c run_pp
 
 install:
-	install -m 644 $(DLIBPP).$(MAJOR).$(MINOR).so $(DESTDIR)/$(libdir)
-	cp -P $(DLIBPP).$(MAJOR).so $(DESTDIR)/$(libdir)
-	cp -P $(DLIBPP).so $(DESTDIR)/$(libdir)
 	install -m 644  $(DLIB).$(MAJOR).$(MINOR).so $(DESTDIR)/$(libdir)
 	cp -P $(DLIB).$(MAJOR).so $(DESTDIR)/$(libdir)
 	cp -P $(DLIB).so $(DESTDIR)/$(libdir)
