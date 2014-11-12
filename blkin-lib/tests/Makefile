@@ -29,17 +29,16 @@
 .PHONY: default clean distclean run run_c run_pp
 
 LIB_DIR=$(shell pwd)/..
-DLIB=$(LIB_DIR)/libzipkin-c
-DLIBPP=$(LIB_DIR)/libzipkin-cpp
+DLIB=$(LIB_DIR)/libblkin
 
 test: test.c $(DLIB).so
-	gcc test.c -o test -g -I$(LIB_DIR) -L$(LIB_DIR) -lzipkin-c
+	gcc test.c -o test -g -I$(LIB_DIR) -L$(LIB_DIR) -lblkin
 
-testpp: test.cc $(DLIBPP).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lzipkin-cpp
+testpp: test.cc $(DLIB).so
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lblkin
 
-testppp: test_p.cc $(DLIBPP).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lzipkin-cpp
+testppp: test_p.cc $(DLIB).so
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lblkin
 
 run_c:
 	LD_LIBRARY_PATH=$(LIB_DIR) ./test
