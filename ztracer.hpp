@@ -125,8 +125,17 @@ namespace ZTracer {
 			int get_trace_info(struct blkin_trace_info *info);
 			int set_trace_info(struct blkin_trace_info *info);
 
-			int keyval(const char *key, const char *val);
-			int event(const char *event);
+			int keyval(const char *key, const char *val)
+			{
+				BLKIN_KEYVAL(&trace, ep->get_blkin_ep(), key, val);
+				return 0;
+			}
+
+			int event(const char *event)
+			{
+				BLKIN_TIMESTAMP(&trace, ep->get_blkin_ep(), event);
+				return 0;
+			}
 
 			static ZTraceRef create(const string &name, ZTraceEndpointRef ep);
 			static ZTraceRef create(const string &name, ZTraceRef t);
