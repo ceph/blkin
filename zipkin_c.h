@@ -40,10 +40,17 @@
 		blkin_record(trace, &__annot);				\
 	} while (0);
 
-#define BLKIN_KEYVAL(trace, endp, key, val) 				\
+#define BLKIN_KEYVAL_STRING(trace, endp, key, val) 				\
 	do {								\
 		struct blkin_annotation __annot;			\
 		blkin_init_string_annotation(&__annot, key, val, endp);	\
+		blkin_record(trace, &__annot);				\
+	} while (0);
+
+#define BLKIN_KEYVAL_INTEGER(trace, endp, key, val) 				\
+	do {								\
+		struct blkin_annotation __annot;			\
+		blkin_init_integer_annotation(&__annot, key, val, endp);	\
 		blkin_record(trace, &__annot);				\
 	} while (0);
 
@@ -99,6 +106,7 @@ struct blkin_trace {
  */
 typedef enum {
     ANNOT_STRING = 0,
+    ANNOT_INTEGER = 0,
     ANNOT_TIMESTAMP
 } blkin_annotation_type;
 
@@ -185,13 +193,27 @@ int blkin_init_endpoint(struct blkin_endpoint *endpoint,
  *
  * @param annotation the annotation to be initialized
  * @param key the annotation's key
- * @param val the annotation's value
+ * @param val the annotation's string value
  * @param endpoint where did this annotation occured
  *
  * @returns 1 if success -1 if error
  */
 int blkin_init_string_annotation(struct blkin_annotation *annotation,
 		const char *key, const char *val,
+		struct blkin_endpoint *endpoint);
+/**
+ * Initialize a key-value blkin_annotation
+ *
+ * @param annotation the annotation to be initialized
+ * @param key the annotation's key
+ * @param val the annotation's  int value
+ * @param endpoint where did this annotation occured
+ *
+ * @returns 1 if success -1 if error
+ */
+
+int blkin_init_integer_annotation(struct blkin_annotation *annotation,
+		const char *key, int64_t val,
 		struct blkin_endpoint *endpoint);
 
 /**
@@ -203,6 +225,7 @@ int blkin_init_string_annotation(struct blkin_annotation *annotation,
  *
  * @returns 1 if success -1 if error
  */
+
 int blkin_init_timestamp_annotation(struct blkin_annotation *annot,
 		const char *event, struct blkin_endpoint *endpoint);
 

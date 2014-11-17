@@ -127,14 +127,11 @@ namespace ZTracer {
 
 			void keyval(const char *key, const char *val)
 			{
-				BLKIN_KEYVAL(&trace, ep->get_blkin_ep(), key, val);
+				BLKIN_KEYVAL_STRING(&trace, ep->get_blkin_ep(), key, val);
 			}
-			void keyval(const char *key, uint64_t val)
+			void keyval(const char *key, int64_t val)
 			{
-				// TODO: add keyval tracepoint for int values
-				std::stringstream ss;
-				ss << val;
-				keyval(key, ss.str().c_str());
+				BLKIN_KEYVAL_INTEGER(&trace, ep->get_blkin_ep(), key, val);
 			}
 
 			void event(const char *event)

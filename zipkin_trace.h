@@ -15,11 +15,11 @@
 
 TRACEPOINT_EVENT(
         zipkin,
-        keyval,
+        keyval_string,
         TP_ARGS(const char *, trace_name, const char *, service, 
             int, port, const char *, ip, long, trace, 
             long, span, long, parent_span, 
-            const char *, key, const char *, val ),
+            char *, key, const char *, val ),
         
         TP_FIELDS(
                 /*
@@ -50,9 +50,52 @@ TRACEPOINT_EVENT(
 )
 TRACEPOINT_LOGLEVEL(
         zipkin, 
-        keyval, 
+        keyval_string, 
         TRACE_WARNING)
 
+/*
+ * This tracepoint allows for integers to come out keyval
+ */
+
+TRACEPOINT_EVENT(
+        zipkin,
+        keyval_integer,
+        TP_ARGS(const char *, trace_name, const char *, service, 
+            int, port, const char *, ip, long, trace, 
+            long, span, long, parent_span, 
+            const char *, key, int64_t, val ),
+        
+        TP_FIELDS(
+                /*
+                 * Each span has a name mentioned on it in the UI
+                 * This is the trace name 
+                 */
+                ctf_string(trace_name, trace_name)
+                /*
+                 * Each trace takes place in a specific machine-endpoint
+                 * This is identified by a name, a port number and an ip
+                 */
+                ctf_string(service_name, service)
+                ctf_integer(int, port_no, port)
+                ctf_string(ip, ip)
+                /*
+                 * According to the tracing semantics each trace should have
+                 * a trace id, a span id and a parent span id 
+                 */
+                ctf_integer(long, trace_id, trace)
+                ctf_integer(long, span_id, span)
+                ctf_integer(long, parent_span_id, parent_span)
+                /*
+                 * The following is the real annotated information
+                 */
+                ctf_string(key, key)
+                ctf_integer(int64_t, val, val)
+        ) 
+)
+TRACEPOINT_LOGLEVEL(
+        zipkin, 
+        keyval_integer, 
+        TRACE_WARNING)
 /*
  * In this event we follow the same semantics but we trace timestamp annotations
  */
