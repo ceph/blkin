@@ -36,19 +36,6 @@ namespace ZTracer {
 		return blkin_init();
 	}
 
-	int ZTrace::keyval(const char *key, const char *val)
-	{
-		BLKIN_KEYVAL(&trace, ep->get_blkin_ep(), key, val);
-		return 0;
-	}
-
-	int ZTrace::event(const char *event)
-	{
-		BLKIN_TIMESTAMP(&trace, ep->get_blkin_ep(), event);
-		return 0;
-	}
-
-
 	ZTraceEndpointRef ZTraceEndpoint::create(const string &ip, int port, const string &name)
 	{
 		return shared_ptr<ZTraceEndpoint>(
