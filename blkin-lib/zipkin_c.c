@@ -170,6 +170,24 @@ OUT:
     return res;
 }
 
+int blkin_init_integer_annotation(struct blkin_annotation *annotation,
+	const char *key, int64_t val, struct blkin_endpoint *endpoint)
+{
+    int res;
+    if ((!annotation) || (!key) || (!val)){
+        res = -EINVAL;
+        goto OUT;
+    }
+    annotation->type = ANNOT_INTEGER;
+    annotation->key = key;
+    annotation->val = val;
+    annotation->annotation_endpoint = endpoint;
+    res = 0;
+
+OUT:
+    return res;
+}
+
 int blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
         const char *event, struct blkin_endpoint *endpoint)
 {
@@ -208,7 +226,20 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
             res = -EINVAL;
             goto OUT;
         }
-        tracepoint(zipkin, keyval, trace->name,
+        tracepoint(zipkin, keyval_string, trace->name,
+                annotation->annotation_endpoint->name,
+                annotation->annotation_endpoint->port,
+                annotation->annotation_endpoint->ip,
+                trace->info.trace_id, trace->info.span_id,
+                trace->info.parent_span_id,
+                annotation->key, annotation->val);
+    }
+    else if (annotation->type == ANNOT_INTEGER) {
+        if ((!annotation->key) || (!annotation->val)) {
+            res = -EINVAL;
+            goto OUT;
+        }
+        tracepoint(zipkin, keyval_integer, trace->name,
                 annotation->annotation_endpoint->name,
                 annotation->annotation_endpoint->port,
                 annotation->annotation_endpoint->ip,
