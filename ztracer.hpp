@@ -31,7 +31,7 @@
 
 #define ZTRACER_H
 
-#include <string>
+#include <sstream>
 #include <boost/smart_ptr.hpp>
 
 extern "C" {
@@ -128,6 +128,13 @@ namespace ZTracer {
 			void keyval(const char *key, const char *val)
 			{
 				BLKIN_KEYVAL(&trace, ep->get_blkin_ep(), key, val);
+			}
+			void keyval(const char *key, uint64_t val)
+			{
+				// TODO: add keyval tracepoint for int values
+				std::stringstream ss;
+				ss << val;
+				keyval(key, ss.str().c_str());
 			}
 
 			void event(const char *event)
