@@ -19,7 +19,7 @@ TRACEPOINT_EVENT(
         TP_ARGS(const char *, trace_name, const char *, service, 
             int, port, const char *, ip, long, trace, 
             long, span, long, parent_span, 
-            char *, key, const char *, val ),
+            const char *, key, const char *, val ),
         
         TP_FIELDS(
                 /*

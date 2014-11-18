@@ -162,7 +162,7 @@ int blkin_init_string_annotation(struct blkin_annotation *annotation,
     }
     annotation->type = ANNOT_STRING;
     annotation->key = key;
-    annotation->val = val;
+    annotation->val_str = val;
     annotation->annotation_endpoint = endpoint;
     res = 0;
 
@@ -180,7 +180,7 @@ int blkin_init_integer_annotation(struct blkin_annotation *annotation,
     }
     annotation->type = ANNOT_INTEGER;
     annotation->key = key;
-    annotation->val = val;
+    annotation->val_int = val;
     annotation->annotation_endpoint = endpoint;
     res = 0;
 
@@ -197,7 +197,7 @@ int blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
         goto OUT;
     }
     annotation->type = ANNOT_TIMESTAMP;
-    annotation->val = event;
+    annotation->val_str = event;
     annotation->annotation_endpoint = endpoint;
     res = 0;
 
@@ -222,7 +222,7 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
         annotation->annotation_endpoint->name = default_name;
 
     if (annotation->type == ANNOT_STRING) {
-        if ((!annotation->key) || (!annotation->val)) {
+        if ((!annotation->key) || (!annotation->val_str)) {
             res = -EINVAL;
             goto OUT;
         }
@@ -232,10 +232,10 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
                 annotation->annotation_endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
-                annotation->key, annotation->val);
+                annotation->key, annotation->val_str);
     }
     else if (annotation->type == ANNOT_INTEGER) {
-        if ((!annotation->key) || (!annotation->val)) {
+        if (!annotation->key) {
             res = -EINVAL;
             goto OUT;
         }
@@ -245,10 +245,10 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
                 annotation->annotation_endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
-                annotation->key, annotation->val);
+                annotation->key, annotation->val_int);
     }
     else {
-        if (!annotation->val) {
+        if (!annotation->val_str) {
             res = -EINVAL;
             goto OUT;
         }
@@ -258,7 +258,7 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
                 annotation->annotation_endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
-                annotation->val);
+                annotation->val_str);
     }
     res = 0;
 OUT:

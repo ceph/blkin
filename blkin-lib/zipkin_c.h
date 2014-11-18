@@ -118,7 +118,10 @@ typedef enum {
 struct blkin_annotation {
     blkin_annotation_type type;
     const char *key;
-    const char *val;
+    union {
+	const char *val_str;
+	int64_t val_int;
+    };
     struct blkin_endpoint *annotation_endpoint;
 };
 
