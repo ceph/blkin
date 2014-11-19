@@ -25,9 +25,13 @@ class ZipkinClient(ScribeClient):
         return trace
 
     def create_annotation(self, event, kind):
-        if kind == "keyval":
+        if kind == "keyval_string":
             key = event["key"]
             val = event["val"]
+            annotation = Annotation.string(key, val)
+        elif kind == "keyval_integer":
+            key = event["key"]
+            val = str(event["val"])
             annotation = Annotation.string(key, val)
         elif kind == "timestamp":
             timestamp = event.timestamp
