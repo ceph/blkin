@@ -174,7 +174,7 @@ int blkin_init_integer_annotation(struct blkin_annotation *annotation,
 	const char *key, int64_t val, struct blkin_endpoint *endpoint)
 {
     int res;
-    if ((!annotation) || (!key) || (!val)){
+    if ((!annotation) || (!key)) {
         res = -EINVAL;
         goto OUT;
     }

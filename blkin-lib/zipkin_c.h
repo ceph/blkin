@@ -106,7 +106,7 @@ struct blkin_trace {
  */
 typedef enum {
     ANNOT_STRING = 0,
-    ANNOT_INTEGER = 0,
+    ANNOT_INTEGER,
     ANNOT_TIMESTAMP
 } blkin_annotation_type;
 
