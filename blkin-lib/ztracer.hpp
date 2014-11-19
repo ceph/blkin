@@ -133,10 +133,24 @@ namespace ZTracer {
 			{
 				BLKIN_KEYVAL_INTEGER(&trace, ep->get_blkin_ep(), key, val);
 			}
+			void keyval(const char *key, const char *val,
+                  const ZTraceEndpointRef &endpoint)
+			{
+				BLKIN_KEYVAL_STRING(&trace, endpoint->get_blkin_ep(), key, val);
+			}
+			void keyval(const char *key, int64_t val,
+                  const ZTraceEndpointRef &endpoint)
+			{
+				BLKIN_KEYVAL_INTEGER(&trace, endpoint->get_blkin_ep(), key, val);
+			}
 
 			void event(const char *event)
 			{
 				BLKIN_TIMESTAMP(&trace, ep->get_blkin_ep(), event);
+			}
+			void event(const char *event, const ZTraceEndpointRef &endpoint)
+			{
+				BLKIN_TIMESTAMP(&trace, endpoint->get_blkin_ep(), event);
 			}
 
 			static ZTraceRef create(const string &name, ZTraceEndpointRef ep);
