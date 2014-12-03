@@ -47,12 +47,10 @@ struct message {
 class Parent {
 	private:
 		int s, s2;
-		ZTracer::ZTraceEndpointRef e;	
-		ZTracer::ZTraceRef tr;
+		ZTracer::ZTraceEndpoint e;
 	public:
-		Parent()
+		Parent() : e("0.0.0.0", 1, "parent")
 		{
-			e = ZTracer::ZTraceEndpoint::create("0.0.0.0", 1, "parent");
 			connect();
 		}
 		void operator()() 
@@ -71,24 +69,25 @@ class Parent {
 			std::cerr << "Connected" << std::endl;
 			
 			for (int i=0;i<10;i++) {
-				process();
+				/*Init trace*/
+        ZTracer::ZTrace tr("parent process", &e);
+
+				process(tr);
 				
 				wait_response();
 
 				/*Log received*/
-				tr->event("parent end");
+				tr.event("parent end");
 			}	
 		}
 
-		void process()
+		void process(ZTracer::ZTrace &tr)
 		{
 			struct message msg(rand());
-			/*Init trace*/
-			tr = ZTracer::ZTrace::create("parent process", e);
 			/*Annotate*/
-			tr->event("parent start");
+			tr.event("parent start");
 			/*Set trace info to the message*/
-			tr->get_trace_info(&msg.trace_info);	
+			tr.get_trace_info(&msg.trace_info);
 			
 			/*send*/
 			send(s2, &msg, sizeof(struct message), 0);
@@ -133,12 +132,10 @@ class Parent {
 class Child {
 	private:
 		int s;
-		ZTracer::ZTraceEndpointRef e;	
-		ZTracer::ZTraceRef tr;
+		ZTracer::ZTraceEndpoint e;
 	public:
-		Child()
+		Child() : e("0.0.0.1", 2, "child")
 		{
-			e = ZTracer::ZTraceEndpoint::create("0.0.0.1", 2, "child");
 		}
 		void operator()() 
 		{
@@ -154,12 +151,12 @@ class Child {
 			struct message msg;
 			recv(s, &msg, sizeof(struct message), 0);
 			
-			tr = ZTracer::ZTrace::create("Child process", e, &msg.trace_info, true);
-			tr->event("child start");
+			ZTracer::ZTrace tr("Child process", &e, &msg.trace_info, true);
+			tr.event("child start");
 			
 			usleep(10);
 			std::cout << "Message received : " << msg.actual_message << ::std::endl;
-			tr->event("child end");
+			tr.event("child end");
 			
 			send(s, "*", 1, 0);
 		}

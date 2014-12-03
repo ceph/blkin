@@ -32,7 +32,6 @@
 #define ZTRACER_H
 
 #include <sstream>
-#include <boost/smart_ptr.hpp>
 
 extern "C" {
 #include <zipkin_c.h>
@@ -40,15 +39,8 @@ extern "C" {
 
 namespace ZTracer {
 	using std::string;
-	using boost::shared_ptr;
 
 	int ztrace_init(void);
-
-	class ZTraceEndpoint;
-	class ZTrace;
-
-	typedef shared_ptr<ZTraceEndpoint> ZTraceEndpointRef;
-	typedef shared_ptr<ZTrace> ZTraceRef;
 
 	class ZTraceEndpoint {
 		private:
@@ -56,11 +48,8 @@ namespace ZTracer {
 			string ip;
 			string name;
 
-			struct blkin_endpoint * get_blkin_ep()
-			{
-				return &ep;
-			}
-			friend ZTrace;
+			const struct blkin_endpoint* get_blkin_ep() const { return &ep; }
+			friend class ZTrace;
 		public:
 			ZTraceEndpoint(const string &ip, int port, const string &endpoint_name)
 				: ip(ip), name(endpoint_name)
@@ -71,14 +60,12 @@ namespace ZTracer {
 			{
 				//cout << "Endpoint destroyed" << std::endl;
 			}
-			static ZTraceEndpointRef create(const string &ip,
-					int port, const string &name);
 	};
 
 	class ZTrace {
 		private:
 			struct blkin_trace trace;
-			ZTraceEndpointRef ep;
+			ZTraceEndpoint *ep;
 			string name;
 
 			struct blkin_trace *get_blkin_trace()
@@ -86,27 +73,27 @@ namespace ZTracer {
 				return &trace;
 			}
 		public:
-			ZTrace(const string &name, ZTraceEndpointRef ep)
+			ZTrace(const string &name, ZTraceEndpoint *ep)
 				: ep(ep), name(name)
 			{
 				blkin_init_new_trace(&trace, name.c_str(), ep->get_blkin_ep());
 			}
 
-			ZTrace(const string &name, ZTraceRef t)
+			ZTrace(const string &name, ZTrace *t)
 				: ep(t->ep), name(name)
 			{
 				blkin_init_child(&trace, t->get_blkin_trace(),
 						ep->get_blkin_ep(), name.c_str());
 			}
 
-			ZTrace(const string &name, ZTraceRef t, ZTraceEndpointRef ep)
+			ZTrace(const string &name, ZTrace *t, ZTraceEndpoint *ep)
 				: ep(ep), name(name)
 			{
 				blkin_init_child(&trace, t->get_blkin_trace(), ep->get_blkin_ep(),
 						name.c_str());
 			}
 
-			ZTrace(const string &name, ZTraceEndpointRef ep, struct blkin_trace_info *info, bool child=false)
+			ZTrace(const string &name, ZTraceEndpoint *ep, struct blkin_trace_info *info, bool child=false)
 				: ep(ep), name(name)
 			{
 				if (child)
@@ -117,7 +104,7 @@ namespace ZTracer {
 				}
 			}
 
-            ZTraceEndpointRef get_endpoint()
+            ZTraceEndpoint* get_endpoint()
             {
                 return this->ep;
             }
@@ -134,12 +121,12 @@ namespace ZTracer {
 				BLKIN_KEYVAL_INTEGER(&trace, ep->get_blkin_ep(), key, val);
 			}
 			void keyval(const char *key, const char *val,
-                  const ZTraceEndpointRef &endpoint)
+                  const ZTraceEndpoint *endpoint)
 			{
 				BLKIN_KEYVAL_STRING(&trace, endpoint->get_blkin_ep(), key, val);
 			}
 			void keyval(const char *key, int64_t val,
-                  const ZTraceEndpointRef &endpoint)
+                  const ZTraceEndpoint *endpoint)
 			{
 				BLKIN_KEYVAL_INTEGER(&trace, endpoint->get_blkin_ep(), key, val);
 			}
@@ -148,16 +135,10 @@ namespace ZTracer {
 			{
 				BLKIN_TIMESTAMP(&trace, ep->get_blkin_ep(), event);
 			}
-			void event(const char *event, const ZTraceEndpointRef &endpoint)
+			void event(const char *event, const ZTraceEndpoint *endpoint)
 			{
 				BLKIN_TIMESTAMP(&trace, endpoint->get_blkin_ep(), event);
 			}
-
-			static ZTraceRef create(const string &name, ZTraceEndpointRef ep);
-			static ZTraceRef create(const string &name, ZTraceRef t);
-			static ZTraceRef create(const string &name, ZTraceRef t, ZTraceEndpointRef ep);
-			static ZTraceRef create(const string &name, ZTraceEndpointRef ep,
-					struct blkin_trace_info *info, bool child=false);
 	};
 
 }

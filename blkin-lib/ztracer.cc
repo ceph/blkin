@@ -28,7 +28,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <ztracer.hpp>
-#include <cstring>
 
 namespace ZTracer {
 	int ztrace_init(void)
@@ -36,31 +35,6 @@ namespace ZTracer {
 		return blkin_init();
 	}
 
-	ZTraceEndpointRef ZTraceEndpoint::create(const string &ip, int port, const string &name)
-	{
-		return shared_ptr<ZTraceEndpoint>(
-				new ZTraceEndpoint(ip, port, name));
-	}
-
-	ZTraceRef ZTrace::create(const string &name, ZTraceEndpointRef ep)
-	{
-		return shared_ptr<ZTrace>(new ZTrace(name, ep));
-	}
-
-	ZTraceRef ZTrace::create(const string &name, ZTraceRef t)
-	{
-		return shared_ptr<ZTrace>(new ZTrace(name, t));
-	}
-
-	ZTraceRef ZTrace::create(const string &name, ZTraceRef t, ZTraceEndpointRef ep)
-	{
-		return shared_ptr<ZTrace>(new ZTrace(name, t, ep));
-	}
-
-	ZTraceRef ZTrace::create(const string &name, ZTraceEndpointRef ep, struct blkin_trace_info *info, bool child)
-	{
-		return shared_ptr<ZTrace>(new ZTrace(name, ep, info, child));
-	}
 	int ZTrace::get_trace_info(struct blkin_trace_info *info)
 	{
 		return blkin_get_trace_info(&trace, info);
