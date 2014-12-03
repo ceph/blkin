@@ -74,7 +74,7 @@ int blkin_init()
 }
 
 int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
-        struct blkin_endpoint *endpoint)
+        const struct blkin_endpoint *endpoint)
 {
     int res;
     if (!new_trace) {
@@ -85,7 +85,7 @@ int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
     new_trace->info.trace_id = random_big();
     new_trace->info.span_id = random_big();
     new_trace->info.parent_span_id = 0;
-    new_trace->trace_endpoint = endpoint;
+    new_trace->endpoint = endpoint;
     res = 0;
 
 OUT:
@@ -93,7 +93,8 @@ OUT:
 }
 
 int blkin_init_child_info(struct blkin_trace *child,
-        struct blkin_trace_info *parent_info, struct blkin_endpoint *endpoint,
+        const struct blkin_trace_info *parent_info,
+	const struct blkin_endpoint *endpoint,
 	const char *child_name)
 {
     int res;
@@ -105,15 +106,17 @@ int blkin_init_child_info(struct blkin_trace *child,
     child->info.span_id = random_big();
     child->info.parent_span_id = parent_info->span_id;
     child->name = child_name;
-    child->trace_endpoint = endpoint;
+    child->endpoint = endpoint;
     res = 0;
 
 OUT:
     return res;
 }
 
-int blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
-		struct blkin_endpoint *endpoint, const char *child_name)
+int blkin_init_child(struct blkin_trace *child,
+	const struct blkin_trace *parent,
+	const struct blkin_endpoint *endpoint,
+	const char *child_name)
 {
     int res;
     if (!parent) {
@@ -121,7 +124,7 @@ int blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
         goto OUT;
     }
     if (!endpoint)
-        endpoint = parent->trace_endpoint;
+        endpoint = parent->endpoint;
     if (blkin_init_child_info(child, &parent->info, endpoint, child_name) != 0){
         res = -EINVAL;
         goto OUT;
@@ -153,7 +156,7 @@ OUT:
 }
 
 int blkin_init_string_annotation(struct blkin_annotation *annotation,
-	const char *key, const char *val, struct blkin_endpoint *endpoint)
+	const char *key, const char *val, const struct blkin_endpoint *endpoint)
 {
     int res;
     if ((!annotation) || (!key) || (!val)){
@@ -163,7 +166,7 @@ int blkin_init_string_annotation(struct blkin_annotation *annotation,
     annotation->type = ANNOT_STRING;
     annotation->key = key;
     annotation->val_str = val;
-    annotation->annotation_endpoint = endpoint;
+    annotation->endpoint = endpoint;
     res = 0;
 
 OUT:
@@ -171,7 +174,7 @@ OUT:
 }
 
 int blkin_init_integer_annotation(struct blkin_annotation *annotation,
-	const char *key, int64_t val, struct blkin_endpoint *endpoint)
+	const char *key, int64_t val, const struct blkin_endpoint *endpoint)
 {
     int res;
     if ((!annotation) || (!key)) {
@@ -181,7 +184,7 @@ int blkin_init_integer_annotation(struct blkin_annotation *annotation,
     annotation->type = ANNOT_INTEGER;
     annotation->key = key;
     annotation->val_int = val;
-    annotation->annotation_endpoint = endpoint;
+    annotation->endpoint = endpoint;
     res = 0;
 
 OUT:
@@ -189,7 +192,7 @@ OUT:
 }
 
 int blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
-        const char *event, struct blkin_endpoint *endpoint)
+        const char *event, const struct blkin_endpoint *endpoint)
 {
     int res;
     if ((!annotation) || (!event)){
@@ -198,28 +201,28 @@ int blkin_init_timestamp_annotation(struct blkin_annotation *annotation,
     }
     annotation->type = ANNOT_TIMESTAMP;
     annotation->val_str = event;
-    annotation->annotation_endpoint = endpoint;
+    annotation->endpoint = endpoint;
     res = 0;
 
 OUT:
     return res;
 }
 
-int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
+int blkin_record(struct blkin_trace *trace,
+	const struct blkin_annotation *annotation)
 {
     int res;
-    if ((!annotation) || (!trace)){
+    if (!annotation || !trace || !trace->name) {
         res = -EINVAL;
         goto OUT;
     }
-    if (!annotation->annotation_endpoint && trace->trace_endpoint)
-        annotation->annotation_endpoint = trace->trace_endpoint;
-    if (!trace->name) 
-        trace->name = default_name;
-    if (!annotation->annotation_endpoint->ip)
-        annotation->annotation_endpoint->ip = default_ip;
-    if (!annotation->annotation_endpoint->name)
-        annotation->annotation_endpoint->name = default_name;
+
+    const struct blkin_endpoint *endpoint =
+	    annotation->endpoint ? : trace->endpoint;
+    if (!endpoint || !endpoint->ip || !endpoint->name) {
+        res = -EINVAL;
+        goto OUT;
+    }
 
     if (annotation->type == ANNOT_STRING) {
         if ((!annotation->key) || (!annotation->val_str)) {
@@ -227,9 +230,7 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
             goto OUT;
         }
         tracepoint(zipkin, keyval_string, trace->name,
-                annotation->annotation_endpoint->name,
-                annotation->annotation_endpoint->port,
-                annotation->annotation_endpoint->ip,
+                endpoint->name, endpoint->port, endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
                 annotation->key, annotation->val_str);
@@ -240,9 +241,7 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
             goto OUT;
         }
         tracepoint(zipkin, keyval_integer, trace->name,
-                annotation->annotation_endpoint->name,
-                annotation->annotation_endpoint->port,
-                annotation->annotation_endpoint->ip,
+                endpoint->name, endpoint->port, endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
                 annotation->key, annotation->val_int);
@@ -253,9 +252,7 @@ int blkin_record(struct blkin_trace *trace, struct blkin_annotation *annotation)
             goto OUT;
         }
         tracepoint(zipkin, timestamp , trace->name,
-                annotation->annotation_endpoint->name,
-                annotation->annotation_endpoint->port,
-                annotation->annotation_endpoint->ip,
+                endpoint->name, endpoint->port, endpoint->ip,
                 trace->info.trace_id, trace->info.span_id,
                 trace->info.parent_span_id,
                 annotation->val_str);
@@ -265,7 +262,7 @@ OUT:
     return res;
 }
 
-int blkin_get_trace_info(struct blkin_trace *trace,
+int blkin_get_trace_info(const struct blkin_trace *trace,
         struct blkin_trace_info *info)
 {
     int res;
@@ -281,7 +278,7 @@ OUT:
 }
 
 int blkin_set_trace_info(struct blkin_trace *trace,
-        struct blkin_trace_info *info)
+        const struct blkin_trace_info *info)
 {
     int res;
     if ((!trace) || (!info)){
@@ -296,7 +293,7 @@ OUT:
 }
 
 int blkin_pack_trace_info(const struct blkin_trace_info *info,
-				struct blkin_trace_info_packed *pinfo)
+	struct blkin_trace_info_packed *pinfo)
 {
 	if (!info || !pinfo) {
 		return -EINVAL;
@@ -310,7 +307,7 @@ int blkin_pack_trace_info(const struct blkin_trace_info *info,
 }
 
 int blkin_unpack_trace_info(const struct blkin_trace_info_packed *pinfo,
-				struct blkin_trace_info *info)
+	struct blkin_trace_info *info)
 {
 	if (!info || !pinfo) {
 		return -EINVAL;
