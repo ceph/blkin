@@ -3,7 +3,6 @@ include_directories(.)
 #blkin
 set(blkin_srcs
     zipkin_c.c
-    ztracer.cc
     tp.c
 )
 add_library(blkin SHARED ${blkin_srcs})

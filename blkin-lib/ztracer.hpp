@@ -40,7 +40,7 @@ extern "C" {
 namespace ZTracer {
 	using std::string;
 
-	int ztrace_init(void);
+	int ztrace_init() { return blkin_init(); }
 
 	class Endpoint : private blkin_endpoint {
 		private:
@@ -91,8 +91,8 @@ namespace ZTracer {
 				}
 			}
 
-			int get_trace_info(struct blkin_trace_info *info);
-			int set_trace_info(struct blkin_trace_info *info);
+      const blkin_trace_info* get_info() const { return &info; }
+      void set_info(const blkin_trace_info *i) { info = *i; }
 
 			void keyval(const char *key, const char *val)
 			{

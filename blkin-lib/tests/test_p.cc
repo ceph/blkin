@@ -86,7 +86,7 @@ class Parent {
 			/*Annotate*/
 			tr.event("parent start");
 			/*Set trace info to the message*/
-			tr.get_trace_info(&msg.trace_info);	
+			msg.trace_info = *tr.get_info();
 			
 			/*send*/
 			send(s2, &msg, sizeof(struct message), 0);

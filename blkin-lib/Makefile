@@ -43,16 +43,13 @@ H_FILES= zipkin_c.h zipkin_trace.h ztracer.hpp
 
 default: $(DLIB).so test testpp testppp
 
-ztracer.o: ztracer.cc ztracer.hpp
-	g++ -I. -Wall -fpic -g -c -o $@ $<
-
 $(DLIB).so: $(DLIB).$(MAJOR).so
 	ln -sf $< $@
 
 $(DLIB).$(MAJOR).so: $(DLIB).$(MAJOR).$(MINOR).so
 	ln -sf $< $@
 
-$(DLIB).$(MAJOR).$(MINOR).so: zipkin_c.o ztracer.o tp.o
+$(DLIB).$(MAJOR).$(MINOR).so: zipkin_c.o tp.o
 	g++ -shared -o $@ $^ $(LIBS)
 
 zipkin_c.o: zipkin_c.c zipkin_c.h zipkin_trace.h
