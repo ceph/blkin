@@ -274,7 +274,7 @@ int blkin_set_trace_info(struct blkin_trace *trace,
  *
  * @returns 0 on success or negative error code
  */
-int blkin_pack_trace_info(struct blkin_trace_info *info,
+int blkin_pack_trace_info(const struct blkin_trace_info *info,
 		struct blkin_trace_info_packed *pinfo);
 
 /**
@@ -285,7 +285,7 @@ int blkin_pack_trace_info(struct blkin_trace_info *info,
  *
  * @returns 0 on success or negative error code
  */
-int blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
+int blkin_unpack_trace_info(const struct blkin_trace_info_packed *pinfo,
 			struct blkin_trace_info *info);
 
 #endif /* ZIPKIN_C_H_ */
