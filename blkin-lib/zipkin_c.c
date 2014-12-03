@@ -274,6 +274,7 @@ int blkin_get_trace_info(struct blkin_trace *trace,
         goto OUT;
     }
 
+    res = 0;
     *info = trace->info;
 OUT:
     return res;
@@ -288,8 +289,8 @@ int blkin_set_trace_info(struct blkin_trace *trace,
         goto OUT;
     }
     
+    res = 0;
     trace->info = *info;
-
 OUT:
     return res;
 }
@@ -305,7 +306,7 @@ int blkin_pack_trace_info(struct blkin_trace_info *info,
 	info->span_id = __be64_to_cpu(pinfo->span_id);
 	info->parent_span_id = __be64_to_cpu(pinfo->parent_span_id);
 
-	return 1;
+	return 0;
 }
 
 int blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
@@ -319,5 +320,5 @@ int blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
 	pinfo->span_id = __cpu_to_be64(info->span_id);
 	pinfo->parent_span_id = __cpu_to_be64(info->parent_span_id);
 
-	return 1;
+	return 0;
 }

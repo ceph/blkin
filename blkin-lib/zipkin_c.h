@@ -141,7 +141,7 @@ int blkin_init();
  * @param endpoint a pointer to a blkin_endpoint struct that contains info about
  * where the specif trace takes place
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_init_new_trace(struct blkin_trace *new_trace, const char *name,
 		struct blkin_endpoint *endpoint);
@@ -155,7 +155,7 @@ int blkin_init_new_trace(struct blkin_trace *new_trace, const char *name,
  * @param parent the parent blkin_trace 
  * @param child_name the blkin_trace name of the child
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
 		struct blkin_endpoint *endpoint,
@@ -172,7 +172,7 @@ int blkin_init_child(struct blkin_trace *child, struct blkin_trace *parent,
  * @param info the parent's blkin_trace_info struct
  * @param child_name the blkin_trace struct name field
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_init_child_info(struct blkin_trace *child,
 		struct blkin_trace_info *info, struct blkin_endpoint *endpoint,
@@ -186,7 +186,7 @@ int blkin_init_child_info(struct blkin_trace *child,
  * @param port the TCP/UDP port of the specific endpoint
  * @param name the name of the service running on the specific endpoint
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_init_endpoint(struct blkin_endpoint *endpoint,
 		const char *ip, int port, const char *name);
@@ -199,7 +199,7 @@ int blkin_init_endpoint(struct blkin_endpoint *endpoint,
  * @param val the annotation's string value
  * @param endpoint where did this annotation occured
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_init_string_annotation(struct blkin_annotation *annotation,
 		const char *key, const char *val,
@@ -212,7 +212,7 @@ int blkin_init_string_annotation(struct blkin_annotation *annotation,
  * @param val the annotation's  int value
  * @param endpoint where did this annotation occured
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 
 int blkin_init_integer_annotation(struct blkin_annotation *annotation,
@@ -226,7 +226,7 @@ int blkin_init_integer_annotation(struct blkin_annotation *annotation,
  * @param event the event happened to be annotated
  * @param endpoint where did this annotation occured
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 
 int blkin_init_timestamp_annotation(struct blkin_annotation *annot,
@@ -238,7 +238,7 @@ int blkin_init_timestamp_annotation(struct blkin_annotation *annot,
  * @param trace the trace to which the annotation belongs
  * @param annotation the annotation to be logged
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_record(struct blkin_trace *trace,
 		struct blkin_annotation *annotation);
@@ -249,7 +249,7 @@ int blkin_record(struct blkin_trace *trace,
  * @param trace the destination
  * @param info where to copy from
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_get_trace_info(struct blkin_trace *trace,
         struct blkin_trace_info *info);
@@ -260,7 +260,7 @@ int blkin_get_trace_info(struct blkin_trace *trace,
  * @param trace the trace with the essential info
  * @param info the destination
  *
- * @returns 1 if success -1 if error
+ * @returns 0 on success or negative error code
  */
 int blkin_set_trace_info(struct blkin_trace *trace,
 		struct blkin_trace_info *info);
@@ -272,7 +272,7 @@ int blkin_set_trace_info(struct blkin_trace *trace,
  * @param info The unpacked trace info.
  * @param pinfo The provided packed version to be initialized.
  *
- * @returns 1 on success, -1 on error
+ * @returns 0 on success or negative error code
  */
 int blkin_pack_trace_info(struct blkin_trace_info *info,
 		struct blkin_trace_info_packed *pinfo);
@@ -283,7 +283,7 @@ int blkin_pack_trace_info(struct blkin_trace_info *info,
  * @param pinfo The provided packed version to be unpacked.
  * @param info The unpacked trace info.
  *
- * @returns 1 on success, -1 on error
+ * @returns 0 on success or negative error code
  */
 int blkin_unpack_trace_info(struct blkin_trace_info_packed *pinfo,
 			struct blkin_trace_info *info);
