@@ -47,7 +47,7 @@ struct message {
 class Parent {
 	private:
 		int s, s2;
-		ZTracer::ZTraceEndpoint e;
+		ZTracer::Endpoint e;
 	public:
 		Parent() : e("0.0.0.0", 1, "parent")
 		{
@@ -70,7 +70,7 @@ class Parent {
 			
 			for (int i=0;i<10;i++) {
 				/*Init trace*/
-        ZTracer::ZTrace tr("parent process", &e);
+        ZTracer::Trace tr("parent process", &e);
 
 				process(tr);
 				
@@ -81,7 +81,7 @@ class Parent {
 			}	
 		}
 
-		void process(ZTracer::ZTrace &tr)
+		void process(ZTracer::Trace &tr)
 		{
 			struct message msg(rand());
 			/*Annotate*/
@@ -132,7 +132,7 @@ class Parent {
 class Child {
 	private:
 		int s;
-		ZTracer::ZTraceEndpoint e;
+		ZTracer::Endpoint e;
 	public:
 		Child() : e("0.0.0.1", 2, "child")
 		{
@@ -151,7 +151,7 @@ class Child {
 			struct message msg;
 			recv(s, &msg, sizeof(struct message), 0);
 			
-			ZTracer::ZTrace tr("Child process", &e, &msg.trace_info, true);
+			ZTracer::Trace tr("Child process", &e, &msg.trace_info, true);
 			tr.event("child start");
 			
 			usleep(10);

@@ -35,11 +35,11 @@ namespace ZTracer {
 		return blkin_init();
 	}
 
-	int ZTrace::get_trace_info(struct blkin_trace_info *info)
+	int Trace::get_trace_info(struct blkin_trace_info *info)
 	{
 		return blkin_get_trace_info(&trace, info);
 	}
-	int ZTrace::set_trace_info(struct blkin_trace_info *info)
+	int Trace::set_trace_info(struct blkin_trace_info *info)
 	{
 		return blkin_set_trace_info(&trace, info);
 	}

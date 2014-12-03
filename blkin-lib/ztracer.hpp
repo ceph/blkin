@@ -42,30 +42,26 @@ namespace ZTracer {
 
 	int ztrace_init(void);
 
-	class ZTraceEndpoint {
+	class Endpoint {
 		private:
 			struct blkin_endpoint ep;
 			string ip;
 			string name;
 
 			const struct blkin_endpoint* get_blkin_ep() const { return &ep; }
-			friend class ZTrace;
+			friend class Trace;
 		public:
-			ZTraceEndpoint(const string &ip, int port, const string &endpoint_name)
+			Endpoint(const string &ip, int port, const string &endpoint_name)
 				: ip(ip), name(endpoint_name)
 			{
 				blkin_init_endpoint(&ep, ip.c_str(), port, name.c_str());
 			}
-			~ZTraceEndpoint()
-			{
-				//cout << "Endpoint destroyed" << std::endl;
-			}
 	};
 
-	class ZTrace {
+	class Trace {
 		private:
 			struct blkin_trace trace;
-			ZTraceEndpoint *ep;
+			Endpoint *ep;
 			string name;
 
 			struct blkin_trace *get_blkin_trace()
@@ -73,27 +69,27 @@ namespace ZTracer {
 				return &trace;
 			}
 		public:
-			ZTrace(const string &name, ZTraceEndpoint *ep)
+			Trace(const string &name, Endpoint *ep)
 				: ep(ep), name(name)
 			{
 				blkin_init_new_trace(&trace, name.c_str(), ep->get_blkin_ep());
 			}
 
-			ZTrace(const string &name, ZTrace *t)
+			Trace(const string &name, Trace *t)
 				: ep(t->ep), name(name)
 			{
 				blkin_init_child(&trace, t->get_blkin_trace(),
 						ep->get_blkin_ep(), name.c_str());
 			}
 
-			ZTrace(const string &name, ZTrace *t, ZTraceEndpoint *ep)
+			Trace(const string &name, Trace *t, Endpoint *ep)
 				: ep(ep), name(name)
 			{
 				blkin_init_child(&trace, t->get_blkin_trace(), ep->get_blkin_ep(),
 						name.c_str());
 			}
 
-			ZTrace(const string &name, ZTraceEndpoint *ep, struct blkin_trace_info *info, bool child=false)
+			Trace(const string &name, Endpoint *ep, struct blkin_trace_info *info, bool child=false)
 				: ep(ep), name(name)
 			{
 				if (child)
@@ -104,7 +100,7 @@ namespace ZTracer {
 				}
 			}
 
-            ZTraceEndpoint* get_endpoint()
+            Endpoint* get_endpoint()
             {
                 return this->ep;
             }
@@ -121,12 +117,12 @@ namespace ZTracer {
 				BLKIN_KEYVAL_INTEGER(&trace, ep->get_blkin_ep(), key, val);
 			}
 			void keyval(const char *key, const char *val,
-                  const ZTraceEndpoint *endpoint)
+                  const Endpoint *endpoint)
 			{
 				BLKIN_KEYVAL_STRING(&trace, endpoint->get_blkin_ep(), key, val);
 			}
 			void keyval(const char *key, int64_t val,
-                  const ZTraceEndpoint *endpoint)
+                  const Endpoint *endpoint)
 			{
 				BLKIN_KEYVAL_INTEGER(&trace, endpoint->get_blkin_ep(), key, val);
 			}
@@ -135,7 +131,7 @@ namespace ZTracer {
 			{
 				BLKIN_TIMESTAMP(&trace, ep->get_blkin_ep(), event);
 			}
-			void event(const char *event, const ZTraceEndpoint *endpoint)
+			void event(const char *event, const Endpoint *endpoint)
 			{
 				BLKIN_TIMESTAMP(&trace, endpoint->get_blkin_ep(), event);
 			}
