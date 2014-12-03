@@ -56,80 +56,68 @@ namespace ZTracer {
 			}
 	};
 
-	class Trace {
+	class Trace : private blkin_trace {
 		private:
-			struct blkin_trace trace;
-			Endpoint *ep;
-			string name;
+			string _name;
 
-			struct blkin_trace *get_blkin_trace()
-			{
-				return &trace;
-			}
 		public:
 			Trace(const string &name, Endpoint *ep)
-				: ep(ep), name(name)
+				: _name(name)
 			{
-				blkin_init_new_trace(&trace, name.c_str(), ep);
+				blkin_init_new_trace(this, _name.c_str(), ep);
 			}
 
-			Trace(const string &name, Trace *t)
-				: ep(t->ep), name(name)
+			Trace(const string &name, Trace *parent)
+				: _name(name)
 			{
-				blkin_init_child(&trace, t->get_blkin_trace(), ep, name.c_str());
+				blkin_init_child(this, parent, parent->endpoint, _name.c_str());
 			}
 
-			Trace(const string &name, Trace *t, Endpoint *ep)
-				: ep(ep), name(name)
+			Trace(const string &name, Trace *parent, Endpoint *ep)
+				: _name(name)
 			{
-				blkin_init_child(&trace, t->get_blkin_trace(), ep, name.c_str());
+				blkin_init_child(this, parent, ep, _name.c_str());
 			}
 
-			Trace(const string &name, Endpoint *ep, struct blkin_trace_info *info, bool child=false)
-				: ep(ep), name(name)
+			Trace(const string &name, Endpoint *ep,
+            const blkin_trace_info *i, bool child=false)
+				: _name(name)
 			{
 				if (child)
-					blkin_init_child_info(&trace, info, ep, name.c_str());
+					blkin_init_child_info(this, i, ep, _name.c_str());
 				else {
-					blkin_init_new_trace(&trace, name.c_str(), ep);
-					blkin_set_trace_info(&trace, info);
+					blkin_init_new_trace(this, _name.c_str(), ep);
+					set_info(i);
 				}
 			}
-
-            Endpoint* get_endpoint()
-            {
-                return ep;
-            }
 
 			int get_trace_info(struct blkin_trace_info *info);
 			int set_trace_info(struct blkin_trace_info *info);
 
 			void keyval(const char *key, const char *val)
 			{
-				BLKIN_KEYVAL_STRING(&trace, ep, key, val);
+				BLKIN_KEYVAL_STRING(this, endpoint, key, val);
 			}
 			void keyval(const char *key, int64_t val)
 			{
-				BLKIN_KEYVAL_INTEGER(&trace, ep, key, val);
+				BLKIN_KEYVAL_INTEGER(this, endpoint, key, val);
 			}
-			void keyval(const char *key, const char *val,
-                  const Endpoint *endpoint)
+			void keyval(const char *key, const char *val, const Endpoint *ep)
 			{
-				BLKIN_KEYVAL_STRING(&trace, endpoint, key, val);
+				BLKIN_KEYVAL_STRING(this, ep, key, val);
 			}
-			void keyval(const char *key, int64_t val,
-                  const Endpoint *endpoint)
+			void keyval(const char *key, int64_t val, const Endpoint *ep)
 			{
-				BLKIN_KEYVAL_INTEGER(&trace, endpoint, key, val);
+				BLKIN_KEYVAL_INTEGER(this, ep, key, val);
 			}
 
 			void event(const char *event)
 			{
-				BLKIN_TIMESTAMP(&trace, ep, event);
+				BLKIN_TIMESTAMP(this, endpoint, event);
 			}
-			void event(const char *event, const Endpoint *endpoint)
+			void event(const char *event, const Endpoint *ep)
 			{
-				BLKIN_TIMESTAMP(&trace, endpoint, event);
+				BLKIN_TIMESTAMP(this, ep, event);
 			}
 	};
 
