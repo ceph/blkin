@@ -5,7 +5,7 @@ set(blkin_srcs
     zipkin_c.c
     tp.c
 )
-add_library(blkin SHARED ${blkin_srcs})
+add_library(blkin ${blkin_srcs})
 target_link_libraries(blkin dl lttng-ust)
 
 install(TARGETS blkin DESTINATION lib)
