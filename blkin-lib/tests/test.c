@@ -69,7 +69,8 @@ void process_a()
     char ack;
 
     /*create and bind socket*/
-    int s, s2, t, len;
+    int s, s2, len;
+    socklen_t t;
     struct sockaddr_un local, remote;
 
     if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
@@ -141,7 +142,7 @@ void process_b()
     struct blkin_trace trace;
     struct blkin_annotation ant;
     struct message msg;
-    int s, t, len;
+    int s, len;
     struct sockaddr_un remote;
 
     /*Connect*/
