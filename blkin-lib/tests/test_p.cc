@@ -102,7 +102,7 @@ class Parent {
 		{
 			/*create and bind socket*/
 			int len;
-			struct sockaddr_un local, remote;
+			struct sockaddr_un local;
 
 			if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
 				std::cerr << "socket" << std::endl;
