@@ -54,6 +54,21 @@ namespace ZTracer {
 				blkin_init_endpoint(this, ip, port, name);
 			}
 
+      // copy constructor and operator need to account for ip/name storage
+      Endpoint(const Endpoint &rhs) : _ip(rhs._ip), _name(rhs._name)
+      {
+        blkin_init_endpoint(this, _ip.size() ? _ip.c_str() : rhs.ip,
+                            rhs.port, _name.size() ? _name.c_str() : rhs.name);
+      }
+      const Endpoint& operator=(const Endpoint &rhs)
+      {
+        _ip.assign(rhs._ip);
+        _name.assign(rhs._name);
+        blkin_init_endpoint(this, _ip.size() ? _ip.c_str() : rhs.ip,
+                            rhs.port, _name.size() ? _name.c_str() : rhs.name);
+        return *this;
+      }
+
       // Endpoint assumes that ip and name will be string literals, and
       // avoids making a copy and freeing on destruction.  if you need to
       // initialize Endpoint with a temporary string, copy_ip/copy_name()
@@ -111,14 +126,20 @@ namespace ZTracer {
 				}
 			}
 
+      // copy constructor and operator need to account for name storage
       Trace(const Trace &rhs) : _name(rhs._name)
       {
-        if (rhs.name == rhs._name.c_str())
-          name = _name.c_str();
-        else
-          name = rhs.name;
+        name = _name.size() ? _name.c_str() : rhs.name;
         info = rhs.info;
         endpoint = rhs.endpoint;
+      }
+      const Trace& operator=(const Trace &rhs)
+      {
+        _name.assign(rhs._name);
+        name = _name.size() ? _name.c_str() : rhs.name;
+        info = rhs.info;
+        endpoint = rhs.endpoint;
+        return *this;
       }
 
       // return true if the Trace has been initialized
