@@ -49,6 +49,10 @@ namespace ZTracer {
 
 			friend class Trace;
 		public:
+			Endpoint(const char *name)
+      {
+				blkin_init_endpoint(this, "0.0.0.0", 0, name);
+      }
 			Endpoint(const char *ip, int port, const char *name)
 			{
 				blkin_init_endpoint(this, ip, port, name);
