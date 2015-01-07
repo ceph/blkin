@@ -88,6 +88,17 @@ namespace ZTracer {
         name = _name.c_str();
       }
 
+      void copy_address_from(const Endpoint *endpoint)
+      {
+        _ip.assign(endpoint->ip);
+        ip = _ip.c_str();
+        port = endpoint->port;
+      }
+      void share_address_from(const Endpoint *endpoint)
+      {
+        ip = endpoint->ip;
+        port = endpoint->port;
+      }
       void set_port(int p) { port = p; }
 	};
 
