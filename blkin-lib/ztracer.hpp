@@ -31,8 +31,6 @@
 
 #define ZTRACER_H
 
-#include <sstream>
-
 extern "C" {
 #include <zipkin_c.h>
 }
@@ -197,34 +195,34 @@ namespace ZTracer {
       void set_info(const blkin_trace_info *i) { info = *i; }
 
       // record key-value annotations
-			void keyval(const char *key, const char *val)
+			void keyval(const char *key, const char *val) const
 			{
         if (valid())
           BLKIN_KEYVAL_STRING(this, endpoint, key, val);
 			}
-			void keyval(const char *key, int64_t val)
+			void keyval(const char *key, int64_t val) const
 			{
         if (valid())
           BLKIN_KEYVAL_INTEGER(this, endpoint, key, val);
 			}
-			void keyval(const char *key, const char *val, const Endpoint *ep)
+			void keyval(const char *key, const char *val, const Endpoint *ep) const
 			{
         if (valid())
           BLKIN_KEYVAL_STRING(this, ep, key, val);
 			}
-			void keyval(const char *key, int64_t val, const Endpoint *ep)
+			void keyval(const char *key, int64_t val, const Endpoint *ep) const
 			{
         if (valid())
           BLKIN_KEYVAL_INTEGER(this, ep, key, val);
 			}
 
       // record timestamp annotations
-			void event(const char *event)
+			void event(const char *event) const
 			{
         if (valid())
           BLKIN_TIMESTAMP(this, endpoint, event);
 			}
-			void event(const char *event, const Endpoint *ep)
+			void event(const char *event, const Endpoint *ep) const
 			{
         if (valid())
           BLKIN_TIMESTAMP(this, ep, event);
