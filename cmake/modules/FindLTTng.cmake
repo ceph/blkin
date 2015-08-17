@@ -17,22 +17,18 @@
 # The hint can be given on the command line too:
 #   cmake -DLTTNG_PATH_HINT=/DATA/ERIC/LTTng /path/to/source
 
-if(LTTNG_PATH_HINT)
-  message(STATUS "FindLTTng: using PATH HINT: ${LTTNG_PATH_HINT}")
-else()
-  set(LTTNG_PATH_HINT /usr/lib/x86_64-linux-gnu/)
-endif()
-  set(LTTNG_PATH_HINT_2 /usr/include/lttng/)
+find_package(PkgConfig)
+pkg_check_modules(PC_LTTNG QUIET lttng-ust)
 
 find_path(LTTNG_INCLUDE_DIR
           NAMES lttng/tracepoint.h
-          PATHS ${LTTNG_PATH_HINT_2}
+          HINTS ${PC_LTTNG_INCLUDEDIR} ${PC_LTTNG_INCLUDE_DIRS}
           PATH_SUFFIXES include
           DOC "The LTTng include headers")
 
 find_path(LTTNG_LIBRARY_DIR
           NAMES liblttng-ust.so
-          PATHS /usr/lib ${LTTNG_PATH_HINT}
+          HINTS ${PC_LTTNG_LIBDIR} ${PC_LTTNG_LIBRARY_DIRS}
           DOC "The LTTng libraries")
 
 find_library(LTTNG_UST_LIBRARY lttng-ust PATHS ${LTTNG_LIBRARY_DIR})
