@@ -61,7 +61,7 @@
  */
 struct blkin_endpoint {
     const char *ip;
-    int port;
+    int16_t port;
     const char *name;
 };
 
@@ -191,7 +191,7 @@ int blkin_init_child_info(struct blkin_trace *child,
  * @returns 0 on success or negative error code
  */
 int blkin_init_endpoint(struct blkin_endpoint *endpoint,
-			const char *ip, int port, const char *name);
+			const char *ip, int16_t port, const char *name);
 
 /**
  * Initialize a key-value blkin_annotation

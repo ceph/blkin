@@ -135,8 +135,8 @@ OUT:
 	return res;
 }
 
-int blkin_init_endpoint(struct blkin_endpoint *endp, const char *ip, int port,
-			const char *name)
+int blkin_init_endpoint(struct blkin_endpoint *endp, const char *ip,
+			int16_t port, const char *name)
 {
 	int res;
 	if (!endp){
