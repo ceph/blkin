@@ -55,6 +55,23 @@
 	} while (0);
 
 /**
+ * Core annotations used by Zipkin used to denote the beginning and end of 
+ * client and server spans.
+ * For more information refer to
+ * https://github.com/openzipkin/zipkin/blob/master/zipkin-thrift/src/main/thrift/com/twitter/zipkin/zipkinCore.thrift
+ */
+const char* const CLIENT_SEND = "cs";
+const char* const CLIENT_RECV = "cr";
+const char* const SERVER_SEND = "ss";
+const char* const SERVER_RECV = "sr";
+const char* const WIRE_SEND = "ws";
+const char* const WIRE_RECV = "wr";
+const char* const CLIENT_SEND_FRAGMENT = "csf";
+const char* const CLIENT_RECV_FRAGMENT = "crf";
+const char* const SERVER_SEND_FRAGMENT = "ssf";
+const char* const SERVER_RECV_FRAGMENT = "srf";
+
+/**
  * @struct blkin_endpoint
  * Information about an endpoint of our instrumented application where
  * annotations take place
