@@ -82,14 +82,18 @@ int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
 		goto OUT;
 	}
 	new_trace->name = service;
-	new_trace->info.trace_id = random_big();
-	new_trace->info.span_id = random_big();
-	new_trace->info.parent_span_id = 0;
+	blkin_init_trace_info(&(new_trace->info));
 	new_trace->endpoint = endpoint;
 	res = 0;
 
 OUT:
 	return res;
+}
+
+void blkin_init_trace_info(struct blkin_trace_info *trace_info)
+{
+	trace_info->span_id = trace_info->trace_id = random_big();
+	trace_info->parent_span_id = 0;
 }
 
 int blkin_init_child_info(struct blkin_trace *child,
@@ -288,6 +292,26 @@ int blkin_set_trace_info(struct blkin_trace *trace,
 
 	res = 0;
 	trace->info = *info;
+OUT:
+	return res;
+}
+
+int blkin_set_trace_properties(struct blkin_trace *trace,
+			 const struct blkin_trace_info *info,
+			 const char *name,
+			 const struct blkin_endpoint *endpoint)
+{
+	int res;
+	if ((!trace) || (!info) || (!endpoint) || (!name)){
+		res = -EINVAL;
+		goto OUT;
+	}
+
+	res = 0;
+	trace->info = *info;
+	trace->name = name;
+	trace->endpoint = endpoint;
+
 OUT:
 	return res;
 }

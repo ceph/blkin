@@ -181,10 +181,7 @@ namespace ZTracer {
 		if (child)
 		    return blkin_init_child_info(this, i, ep, _name.c_str());
 
-		int r = blkin_init_new_trace(this, _name.c_str(), ep);
-		if (r == 0)
-		    set_info(i);
-		return r;
+		return blkin_set_trace_properties(this, i, _name.c_str(), ep);
 	    }
 
 	// Trace assumes that name will be a string literal, and avoids
