@@ -164,6 +164,15 @@ int blkin_init_new_trace(struct blkin_trace *new_trace, const char *name,
 			 const struct blkin_endpoint *endpoint);
 
 /**
+ * Initialize blkin_trace_info for a root span. The new trace will
+ * have no parent so the parent id will be zero, and the id and trace id will
+ * be the same.
+ *
+ * @param trace_info the blkin_trace_info to be initialized
+ */
+void blkin_init_trace_info(struct blkin_trace_info *trace_info);
+
+/**
  * Initialize a blkin_trace as a child of the given parent
  * bkin_trace. The child trace will have the same trace_id, new
  * span_id and parent_span_id its parent's span_id.
@@ -285,6 +294,20 @@ int blkin_get_trace_info(const struct blkin_trace *trace,
 int blkin_set_trace_info(struct blkin_trace *trace,
 			 const struct blkin_trace_info *info);
 
+/**
+ * Set the trace information, name and endpoint of a trace.
+ *
+ * @param trace the trace to which the properties will be assigned
+ * @param info blkin_trace_information with the trace identifiers
+ * @param name span name
+ * @param endpoint associated host
+ *
+ * @returns 0 on success or negative error code
+ */
+int blkin_set_trace_properties(struct blkin_trace *trace,
+			 const struct blkin_trace_info *info,
+			 const char *name,
+			 const struct blkin_endpoint *endpoint);
 
 /**
  * Convert a blkin_trace_info to the packed version.
