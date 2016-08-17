@@ -38,6 +38,17 @@ extern "C" {
 namespace ZTracer {
     using std::string;
 
+    const char* const CLIENT_SEND = "cs";
+    const char* const CLIENT_RECV = "cr";
+    const char* const SERVER_SEND = "ss";
+    const char* const SERVER_RECV = "sr";
+    const char* const WIRE_SEND = "ws";
+    const char* const WIRE_RECV = "wr";
+    const char* const CLIENT_SEND_FRAGMENT = "csf";
+    const char* const CLIENT_RECV_FRAGMENT = "crf";
+    const char* const SERVER_SEND_FRAGMENT = "ssf";
+    const char* const SERVER_RECV_FRAGMENT = "srf";
+
     static inline int ztrace_init() { return blkin_init(); }
 
     class Endpoint : private blkin_endpoint {
