@@ -31,6 +31,7 @@
 
 #define ZTRACER_H
 
+#include <string>
 extern "C" {
 #include <zipkin_c.h>
 }

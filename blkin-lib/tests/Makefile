@@ -35,10 +35,10 @@ test: test.c $(DLIB).so
 	gcc test.c -o test -g -I$(LIB_DIR) -L$(LIB_DIR) -lblkin
 
 testpp: test.cc $(DLIB).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lblkin
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testpp -std=c++11 -g -I$(LIB_DIR) -L$(LIB_DIR) -lblkin -lpthread
 
 testppp: test_p.cc $(DLIB).so
-	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I$(LIB_DIR) -L$(LIB_DIR) -lboost_thread -lboost_system -lblkin
+	LD_LIBRARY_PATH=$(LIB_DIR) g++ $< -o testppp -g -I$(LIB_DIR) -L$(LIB_DIR) -lblkin
 
 run_c:
 	LD_LIBRARY_PATH=$(LIB_DIR) ./test
