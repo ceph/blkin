@@ -27,7 +27,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <boost/thread.hpp>
+#include <thread>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -195,8 +195,8 @@ int main(int argc, const char *argv[])
 	}
 	Parent p;
 	Child c;
-	boost::thread workerThread1(p);
-	boost::thread workerThread2(c);
+	std::thread workerThread1(p);
+	std::thread workerThread2(c);
 	workerThread1.join();
 	workerThread2.join();
 

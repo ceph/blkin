@@ -27,13 +27,13 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <boost/thread.hpp>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <ztracer.hpp>
 #include <iostream>
+#include <cstdlib>
 
 #define SOCK_PATH "socket"
 
