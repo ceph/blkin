@@ -6,7 +6,7 @@ set(blkin_srcs
     tp.c
 )
 add_library(blkin ${blkin_srcs})
-target_compile_options(blkin PRIVATE "-fPIC")
+set_target_properties(blkin PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(blkin dl ${LTTNG_LIBRARIES})
 
 install(TARGETS blkin DESTINATION lib)
