@@ -34,14 +34,13 @@ LIBS= -ldl -llttng-ust
 DLIB=libblkin
 
 LIB_DIR=$(shell pwd)
-TEST_DIR=$(shell pwd)/tests
 prefix= /usr/local
 libdir= $(prefix)/lib
 incdir= $(prefix)/include
 
 H_FILES= zipkin_c.h zipkin_trace.h ztracer.hpp
 
-default: $(DLIB).so test testpp testppp
+default: $(DLIB).so 
 
 $(DLIB).so: $(DLIB).$(MAJOR).so
 	ln -sf $< $@
@@ -58,23 +57,14 @@ zipkin_c.o: zipkin_c.c zipkin_c.h zipkin_trace.h
 tp.o: tp.c zipkin_trace.h
 	gcc -I. -fpic -g -c -o $@ $<
 
-test: $(TEST_DIR)/test.c $(DLIB).so
-	make -C tests test
-
-testpp: $(TEST_DIR)/test.cc $(DLIB).so
-	make -C tests testpp
-
-testppp: $(TEST_DIR)/test_p.cc $(DLIB).so
-	make -C tests testppp
-
 run_c:
-	make -C tests run_c
+	make -C run_c
 
 run_pp:
-	make -C tests run_pp
+	make -C run_pp
 
 run_ppp:
-	make -C tests run_ppp
+	make -C run_ppp
 
 run: run_c run_pp
 
@@ -86,7 +76,7 @@ install:
 
 clean:
 	rm -f *.o *.so
-	make -C tests clean
+	make -C clean
 
 distclean: clean
 	rm -f socket

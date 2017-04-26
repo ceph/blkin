@@ -15,4 +15,3 @@ set(blkin_headers
   ztracer.hpp
 )
 
-add_subdirectory(tests)
