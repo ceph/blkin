@@ -26,7 +26,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-.PHONY: default clean distclean run run_c run_pp
+.PHONY: default clean distclean
 
 MAJOR=0
 MINOR=1
@@ -56,17 +56,6 @@ zipkin_c.o: zipkin_c.c zipkin_c.h zipkin_trace.h
 
 tp.o: tp.c zipkin_trace.h
 	gcc -I. -fpic -g -c -o $@ $<
-
-run_c:
-	make -C run_c
-
-run_pp:
-	make -C run_pp
-
-run_ppp:
-	make -C run_ppp
-
-run: run_c run_pp
 
 install:
 	install -m 644  $(DLIB).$(MAJOR).$(MINOR).so $(DESTDIR)/$(libdir)
