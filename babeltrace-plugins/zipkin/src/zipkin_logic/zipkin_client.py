@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import sys
+sys.path.append('.')
 from scribe_client import ScribeClient
 from trace import Annotation, Trace, Endpoint
 from collections import defaultdict
