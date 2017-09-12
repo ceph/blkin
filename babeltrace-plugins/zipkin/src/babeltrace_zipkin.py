@@ -7,7 +7,7 @@ import sys
 import getopt
 from babeltrace import *
 from zipkin_logic.zipkin_client import ZipkinClient
-HELP = "Usage: python babeltrace_zipkin.py path/to/file -s <server> -p <port>"
+HELP = "Usage: python babeltrace_zipkin.py path/to/trace -s <server> -p <port>"
 
 
 def main(argv):
@@ -47,11 +47,8 @@ def main(argv):
 
     for event in traces.events:
         name = event.name
-        try:
-            provider, kind = name.split(":")
-            if provider != "zipkin":
-                raise
-        except:
+        provider, kind = name.split(":")
+        if provider != "zipkin":
             continue
 
         #create a zipkin trace from event info
