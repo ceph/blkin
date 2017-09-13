@@ -8,7 +8,7 @@ import getopt
 from babeltrace import *
 from scribe_client import ScribeClient
 
-HELP = "Usage: python babeltrace_zipkin.py path/to/file -s <server> -p <port>"
+HELP = "Usage: python babeltrace_zipkin.py path/to/trace -s <server> -p <port>"
 CATEGORY = "LTTng"
 
 
@@ -55,16 +55,16 @@ def main(argv):
         data['name'] = event["trace_name"]
         data ["trace_id"] = event["trace_id"]
         data["span_id"] = event["span_id"]
-	data['port'] = event['port_no']
-	data['service_name'] = event['service_name']
-	data['ip'] = event['ip']
-	data['evemt'] = event['event']
-	data['timestamp'] = event.timestamp
-	'''
-        for k, v in event.items():
-            field_type = event._field(k).type
-            data[k] = format_value(field_type, v)
-	'''
+        data['port'] = event['port_no']
+        data['service_name'] = event['service_name']
+        data['ip'] = event['ip']
+        data['event'] = event['event']
+        data['timestamp'] = event.timestamp
+        '''
+            for k, v in event.items():
+                field_type = event._field(k).type
+                data[k] = format_value(field_type, v)
+        '''
         json_data = json.dumps(data)
 
         #send data to scribe
