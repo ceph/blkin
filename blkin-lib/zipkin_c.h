@@ -58,7 +58,7 @@
  * Core annotations used by Zipkin used to denote the beginning and end of 
  * client and server spans.
  * For more information refer to
- * https://github.com/openzipkin/zipkin/blob/master/zipkin-thrift/src/main/thrift/com/twitter/zipkin/zipkinCore.thrift
+ * https://github.com/openzipkin/zipkin-api/blob/master/thrift/zipkinCore.thrift
  */
 extern const char* const CLIENT_SEND;
 extern const char* const CLIENT_RECV;
