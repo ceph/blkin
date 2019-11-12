@@ -60,6 +60,10 @@
  * For more information refer to
  * https://github.com/openzipkin/zipkin-api/blob/master/thrift/zipkinCore.thrift
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern const char* const CLIENT_SEND;
 extern const char* const CLIENT_RECV;
 extern const char* const SERVER_SEND;
@@ -330,5 +334,9 @@ int blkin_pack_trace_info(const struct blkin_trace_info *info,
  */
 int blkin_unpack_trace_info(const struct blkin_trace_info_packed *pinfo,
 			    struct blkin_trace_info *info);
+#ifdef __cplusplus
+/* end to extern "C" */
+}
+#endif
 
 #endif /* ZIPKIN_C_H_ */

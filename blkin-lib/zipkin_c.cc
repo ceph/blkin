@@ -34,7 +34,15 @@
 #include <fcntl.h>
 
 #define TRACEPOINT_DEFINE
-#include <zipkin_trace.h>
+#define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
+#include "tracing/zipkin.h"
+#define TRACEPOINT_DEFINE
+#undef TRACEPOINT_PROBE_DYNAMIC_LINKAGE
+
+#include "global/global_context.h"
+#include "common/TracepointProvider.h"
+
+TracepointProvider::Traits tracepoint_traits("libzipkin_tp.so", "blkin_tracing");
 
 const char *default_ip = "NaN";
 const char *default_name = "NoName";
@@ -227,13 +235,13 @@ int blkin_record(const struct blkin_trace *trace,
 		 const struct blkin_annotation *annotation)
 {
 	int res;
+	const struct blkin_endpoint *endpoint;
 	if (!annotation || !trace || !trace->name) {
 		res = -EINVAL;
 		goto OUT;
-	}
-
-	const struct blkin_endpoint *endpoint =
-		annotation->endpoint ? : trace->endpoint;
+	} 
+	TracepointProvider::initialize<tracepoint_traits>(g_ceph_context);
+	endpoint = annotation->endpoint ? nullptr : trace->endpoint;
 	if (!endpoint || !endpoint->ip || !endpoint->name) {
 		res = -EINVAL;
 		goto OUT;
